@@ -35,4 +35,4 @@ done
 
 echo "Script completed."
 
-python ece.py --model $model --file_path ${label}_test.json
+python ece.py --model $model --file_path ../results/scienceqa/${label}_test_cache.json

@@ -22,9 +22,8 @@ Solution: Compare the properties of each substance to the properties of minerals
 Therefore, the answer is A.
 Probability: 0.960
 
-In any situation even in case you cannot decide, do not say you cannot decide, you must strictly follow the format:
-Therefore, the answer is [ANSWER].
-Probability: [3 decimal places float ranging 0 to 1]
+In case the answer cannot be determined or no image provided and no additional context or information given, you must always select exactly one random answer and must strictly follow the format:
+"Therefore, the answer is [ANSWER or RANDOM].\nProbability: [3 decimal places float ranging 0 to 1]"
 """
 
 
@@ -84,9 +83,8 @@ Comparing these options with the definition of a mineral, it's clear that the tu
 Therefore, the answer is A (turtle shell).
 Probability: 0.960
 
-In any situation even in case you cannot decide, do not say you cannot decide, you must strictly follow the format:
-Therefore, the answer is [ANSWER].
-Probability: [3 decimal places float ranging 0 to 1]
+In case the answer cannot be determined or no image provided and no additional context or information given, you must always select exactly one random answer and must strictly follow the format:
+"Therefore, the answer is [ANSWER or RANDOM].\nProbability: [3 decimal places float ranging 0 to 1]"
 """
 
 

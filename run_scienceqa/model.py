@@ -482,6 +482,7 @@ class solver:
                     success = True
                 count += 1
             if count >= patience:
+                print(solution)
                 raise Exception("ERROR: out-of-patience")
             self.cache["option_prob"] = _prob
 
