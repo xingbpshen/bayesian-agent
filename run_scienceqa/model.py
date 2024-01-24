@@ -371,34 +371,96 @@ class solver:
         ]
 
         # excute the module
-        success = False
         patience = self.sg_patience
-        count = 0
-        while count < patience and not success:
-            if self.sg_temperature < 0.1 and count > 0:
-                _temperature = min(self.sg_temperature + 0.1, 1.0)
-            else:
-                _temperature = self.sg_temperature
 
-            solution = get_chat_response(messages, self.api_key, self.sg_engine, _temperature, self.sg_max_tokens)
-
-            # parse the solution to obtain option probabilities
-            try:
-                if self.model == "bcot-ticoh-s":
-                    # in the form: {0: 0.500, 1: 0.500}
-                    option_prob_dict = extract_option_prob_from_solution(solution)
-                elif self.model in ["chameleon", "cot"]:
+        if self.model == "bcot-ticoh-s":
+            num_sampling = 3
+            # in the form of {0: 0.500, 1: 0.500, ...}
+            option_prob_dict = None
+            for idx_sampling in range(num_sampling):
+                # this will only print the 3rd sampling result,
+                # however, it will record all probabilities across all samplings in the backend
+                success = False
+                count = 0
+                while count < patience and not success:
+                    if self.sg_temperature < 0.1 and count > 0:
+                        _temperature = min(self.sg_temperature + 0.1, 1.0)
+                    else:
+                        _temperature = self.sg_temperature
+                    solution = get_chat_response(messages, self.api_key, self.sg_engine, _temperature, self.sg_max_tokens)
+                    # parse the solution to obtain probabilities
+                    try:
+                        # in the form of {0: 0.500, 1: 0.500, ...}, safe when empty dict,
+                        # however, not safe when probs not sum to 1, we will normalize it later
+                        option_prob_dict_curr = extract_option_prob_from_solution(solution)
+                    except Exception as e:
+                        print("Failed to obtain the option probabilities from the solution. Retrying...")
+                        count += 1
+                        continue
+                    pattern = re.compile(r"[Tt]he answer is ([A-Z])")  # "The answer is XXXXX.",
+                    res = pattern.findall(solution)
+                    if len(res) > 0:
+                        # normalize the probabilities (round to maximum 3 decimal places) if not sum to 1
+                        option_prob_dict_curr = normalize_dict(option_prob_dict_curr)
+                        # process the probability dictionary, summing
+                        if option_prob_dict is None:
+                            # for the first successful sampling
+                            option_prob_dict = option_prob_dict_curr
+                        else:
+                            # add current probabilities to the existing dictionary, key by key
+                            for key in option_prob_dict:
+                                option_prob_dict[key] += option_prob_dict_curr[key]
+                        # change flag when all good, proceed to the next sampling
+                        success = True
+                    count += 1
+                if count >= patience:
+                    print(solution)
+                    raise Exception("ERROR: out-of-patience")
+            # after the sampling is done, we need to divide the sum by the number of samplings
+            # (round to maximum 3 decimal places)
+            option_prob_dict = {_key: round(_value / num_sampling, 3) for _key, _value in option_prob_dict.items()}
+            # for higher safety, normalize the probabilities (round to maximum 3 decimal places) if not sum to 1
+            option_prob_dict = normalize_dict(option_prob_dict)
+            # TODO: deal with option_prob_dict
+            self.cache["bcot_option_prob_dict"] = option_prob_dict
+            # assign the self.cache["bcot_sampled_solution"] to the highest probability option
+            # for example, if option_prob_dict = {0: 0.500, 1: 0.500}, then the highest probability option is 0
+            # then you should assign self.cache["bcot_sampled_solution"] = "The answer is A."
+            # Find the key with the highest probability
+            highest_prob_key = max(option_prob_dict, key=option_prob_dict.get)
+            # Map the key to an option letter (A, B, C, ...)
+            # The ASCII code of 'A' is 65, so we add the key to 65 to get the corresponding letter
+            option_letter = chr(65 + highest_prob_key)
+            # Assign the result to the cache
+            self.cache["bcot_sampled_solution"] = f"{option_letter}"
+            print(option_prob_dict)
+        else:
+            success = False
+            count = 0
+            while count < patience and not success:
+                if self.sg_temperature < 0.1 and count > 0:
+                    _temperature = min(self.sg_temperature + 0.1, 1.0)
+                else:
+                    _temperature = self.sg_temperature
+                solution = get_chat_response(messages, self.api_key, self.sg_engine, _temperature, self.sg_max_tokens)
+                # parse the solution to obtain probabilities
+                try:
                     # TODO: implement this
                     pass
-            except Exception as e:
-                print("Failed to obtain the option probabilities from the solution. Retrying...")
-                continue
-
-            pattern = re.compile(r"[Tt]he answer is ([A-Z])") # "The answer is XXXXX.",
-            res = pattern.findall(solution)
-            if len(res) > 0:
-                success = True
-            count += 1
+                except Exception as e:
+                    if count >= patience:
+                        raise Exception("ERROR: failed to obtain the option probabilities from the solution, "
+                                        "out-of-patience")
+                    print("Failed to obtain the option probabilities from the solution. Retrying...")
+                    count += 1
+                    continue
+                pattern = re.compile(r"[Tt]he answer is ([A-Z])")  # "The answer is XXXXX.",
+                res = pattern.findall(solution)
+                if len(res) > 0:
+                    success = True
+                count += 1
+            if count >= patience:
+                raise Exception("ERROR: out-of-patience")
 
         # update the cache
         self.cache["solution"] = solution
@@ -414,20 +476,30 @@ class solver:
         inds = ["A", "B", "C", "D", "E"]
 
         # excute the module
-        success = False
-        if output:
-            pattern = re.compile(r"[Tt]he answer is ([A-Z])") # "The answer is A.",
-            res = pattern.findall(output)
-            if len(res) > 0:
-                ans = res[0] # "A"
-                if ans in inds[:len(options)]:
-                    success = True
-                    prediction = options[inds.index(ans)]
-
-        if not success:
-            prediction = normalize_prediction_scienceqa(output, options)
+        if self.model in ["cot", "chameleon"]:
+            success = False
+            if output:
+                pattern = re.compile(r"[Tt]he answer is ([A-Z])") # "The answer is A.",
+                res = pattern.findall(output)
+                if len(res) > 0:
+                    ans = res[0] # "A"
+                    if ans in inds[:len(options)]:
+                        success = True
+                        prediction = options[inds.index(ans)]
+            if not success:
+                prediction = normalize_prediction_scienceqa(output, options)
+        elif self.model in ["bcot-ticoh-s"]:
+            ans = self.cache["bcot_sampled_solution"]
+            prediction = options[inds.index(ans)]
+        else:
+            raise Exception("ERROR: answer_generator(self), invalid model name " + self.model)
 
         # update the cache
+        # in BCoT, self.cache["prediction"] and self.cache["answer_generator:output"] are the same
+        # however, in BCoT, self.cache["answer_generator:input"] may be different from
+        # self.cache["solution_generator:output"] and self.cache["prediction"] because
+        # self.cache["answer_generator:input"] only records the last sampling result,
+        # hence we ignore self.cache["answer_generator:input"] in BCoT
         self.cache["prediction"] = prediction
         self.cache["answer_generator:input"] = output
         self.cache["answer_generator:output"] = prediction
@@ -475,3 +547,15 @@ def extract_option_prob_from_solution(text):
         raise Exception("ERROR: extract_option_prob_from_solution(text), empty dict")
 
     return probabilities_info
+
+
+def normalize_dict(_dict):
+    # normalize the probabilities (with maximum 3 decimal places) if not sum to 1
+    # if the case of all 0s, assign 1/len(_dict) to each key
+    _sum = sum(_dict.values())
+    if _sum != 1.0:
+        if _sum == 0.0:
+            _dict = {_key: round(1.0 / len(_dict), 3) for _key in _dict.keys()}
+        else:
+            _dict = {_key: round(_value / _sum, 3) for _key, _value in _dict.items()}
+    return _dict

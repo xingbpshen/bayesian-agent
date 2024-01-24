@@ -94,25 +94,36 @@ Conclusion:
 The answer is B with a numerical probability of 0.900.
 """
 
-lines = text.split('\n')  # Split the text into individual lines
-probabilities_start = None
-probabilities_end = None
+# lines = text.split('\n')  # Split the text into individual lines
+# probabilities_start = None
+# probabilities_end = None
+#
+# # Find the line numbers for "Probabilities:" and "Conclusion:"
+# for i, line in enumerate(lines):
+#     if "Probabilities:" in line:
+#         probabilities_start = i + 1  # Start capturing from the next line
+#     if "Conclusion:" in line:
+#         probabilities_end = i  # Stop capturing at this line
+#         break  # No need to continue searching
+#
+# # Extract the lines between "Probabilities:" and "Conclusion:"
+# if probabilities_start is not None and probabilities_end is not None:
+#     probability_lines = lines[probabilities_start:probabilities_end]
+#     probabilities_info = "\n".join(probability_lines)
+# else:
+#     probabilities_info = "No probabilities information found"
+#
+# print(probabilities_info)
 
-# Find the line numbers for "Probabilities:" and "Conclusion:"
-for i, line in enumerate(lines):
-    if "Probabilities:" in line:
-        probabilities_start = i + 1  # Start capturing from the next line
-    if "Conclusion:" in line:
-        probabilities_end = i  # Stop capturing at this line
-        break  # No need to continue searching
+def normalize_dict(_dict):
+    # normalize the probabilities (with maximum 3 decimal places) if not sum to 1
+    # if the case of all 0s, assign 1/len(_dict) to each key
+    _sum = sum(_dict.values())
+    if _sum != 1.0:
+        if _sum == 0.0:
+            _dict = {_key: round(1.0 / len(_dict), 3) for _key in _dict.keys()}
+        else:
+            _dict = {_key: round(_value / _sum, 3) for _key, _value in _dict.items()}
+    return _dict
 
-# Extract the lines between "Probabilities:" and "Conclusion:"
-if probabilities_start is not None and probabilities_end is not None:
-    probability_lines = lines[probabilities_start:probabilities_end]
-    probabilities_info = "\n".join(probability_lines)
-else:
-    probabilities_info = "No probabilities information found"
-
-print(probabilities_info)
-
-
+print(normalize_dict({0: 0, 1: 0, 2: 0}))
