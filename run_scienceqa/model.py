@@ -426,11 +426,25 @@ class solver:
             # assign the self.cache["bcot_sampled_solution"] to the highest probability option
             # for example, if option_prob_dict = {0: 0.500, 1: 0.500}, then the highest probability option is 0
             # then you should assign self.cache["bcot_sampled_solution"] = "The answer is A."
-            # Find the key with the highest probability
-            highest_prob_key = max(option_prob_dict, key=option_prob_dict.get)
-            # Map the key to an option letter (A, B, C, ...)
-            # The ASCII code of 'A' is 65, so we add the key to 65 to get the corresponding letter
-            option_letter = chr(65 + highest_prob_key)
+
+            # # TODO: this selects the first highest option given the set of highest options
+            # # Find the key with the highest probability
+            # highest_prob_key = max(option_prob_dict, key=option_prob_dict.get)
+            # # Map the key to an option letter (A, B, C, ...)
+            # # The ASCII code of 'A' is 65, so we add the key to 65 to get the corresponding letter
+            # option_letter = chr(65 + highest_prob_key)
+
+            # TODO: this selects a random option among the set of highest options
+            # Find the highest probability value
+            _max_prob = max(option_prob_dict.values())
+            # Filter options that have the highest probability
+            _max_prob_options = [_option for _option, _prob in option_prob_dict.items() if _prob == _max_prob]
+            # Randomly select one option if there's more than one
+            _selected_option = random.choice(_max_prob_options)
+            # Map the selected option to A, B, C, D, etc.
+            # Assuming options are 0-indexed, we add 65 (ASCII value of 'A') to get the letter representation
+            option_letter = chr(_selected_option + 65)
+
             # Assign the result to the cache
             self.cache["bcot_sampled_solution"] = f"{option_letter}"
             print(option_prob_dict)
