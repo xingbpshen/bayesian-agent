@@ -293,7 +293,7 @@ Make a Decision with Confidence (Variable Z3):
 - Integrate the evaluations and reasoning from Z1 to Z2. For each answer option, provide a probability that represents your confidence in the option being correct. Ensure that the probabilities sum up to 1.
 - Proceed with the analysis, ensuring that each variable is logically derived from the provided information and the outcomes of the depending variables. 
 
-Finally, you must conclude one answer in the form of "The answer is <correct option> with numerical probability of <correct option’s numerical probability with 3 decimal places>", for example, "The answer is A with numerical probability of 0.852" or "The answer is B with numerical probability of 0.904". Note that all probabilities you calculated should be in 3 decimal places, and you should make the reasoning of Bayesian inference be more concise.
+Finally, you must conclude exact one answer in the form of "The answer is <correct option> with numerical probability of <correct option’s numerical probability with 3 decimal places>", for example, "The answer is A with numerical probability of 0.852" or "The answer is B with numerical probability of 0.904". Note that all probabilities you calculated should be in 3 decimal places, and you should make the reasoning of Bayesian inference be more concise. If you encountered more than one option with the same highest probability, you should randomly select one with the highest probability.
 
 
 Consider the following examples:
@@ -400,5 +400,5 @@ Conclusion:
 The answer is A with a numerical probability of 0.950.
 
 
-IMPORTANT: You must select exactly one answer even if you are not confident in your decision. If you are not confident in any of the options, select the one that you think is most likely to be correct.
+IMPORTANT: If there are more than one option with the same highest probability, you must randomly select one with the highest probability and strictly follow the format of "The answer is <correct option> with numerical probability of <correct option’s numerical probability with 3 decimal places>", for example, "The answer is A with numerical probability of 0.852" or "The answer is B with numerical probability of 0.904".
 """
