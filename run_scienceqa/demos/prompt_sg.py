@@ -1,3 +1,33 @@
+# Input-output (IO)
+prompt_io = """
+Given the question (and the context), directly select the answer from the options ["A", "B", "C", "D", "E"] without explicit reasoning. You must conclude the answer in the format of "the answer is [ANSWER]", where [ANSWER] is one from the options ["A", "B", "C", "D", "E"]. For example, "the answer is A", "the answer is B", "the answer is C", "the answer is D", or "the answer is E". If the answer is not in the options, select one random letter option from ["A", "B", "C", "D", "E"]. Then you need to provide a numerical probability with 3 decimal places for the answer, which is a number between 0.000 and 1.000, where 0.000 means the answer is impossible and 1.000 means the answer is certain.
+
+
+For example:
+Question: Select the one substance that is not a mineral.
+
+Context: Select the better answer.
+
+Options: (A) turtle shell is not a pure substance. It is made by a living thing (B) Celestine is a pure substance. It is a solid. (C) Hematite is not made by living things. It is a solid.
+
+Solution:
+The answer is A.
+Probability: 0.980
+
+
+For another example:
+Question: Which property do these two objects have in common?
+
+Context: Select the better answer. Image: A pair of scissors next to a pair of scissors.
+
+Options: (A) hard (B) bendable
+
+Solution:
+The answer is B.
+Probability: 0.950
+"""
+
+
 # cot
 prompt_cot = """
 Given the question (and the context), select the answer from the options ["A", "B", "C", "D", "E"]. You should give consice and step-by-step solutions. Finally, conclude the answer in the format of "the answer is [ANSWER]", where [ANSWER] is one from the options ["A", "B", "C", "D", "E"]. For example, "the answer is A", "the answer is B", "the answer is C", "the answer is D", or "the answer is E". If the answer is not in the options, select the most possible option. Then you need to provide a numerical probability with 3 decimal places for the answer, which is a number between 0.000 and 1.000, where 0.000 means the answer is impossible and 1.000 means the answer is certain.

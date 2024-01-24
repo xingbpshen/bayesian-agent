@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# Setting
-num_test_trial=100
+# Settings
+num_test_trial=100 # change to -1 to run all test trials
 sg_temperature=0
-model=chameleon
-label=exp3
+model=io
+label=exp5
 
 # Command to execute
 CMD="python run.py

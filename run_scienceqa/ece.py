@@ -43,7 +43,7 @@ def calculate_ece(data, model, num_bins=10, uniform_bins=False):
             # Find the predicted probability and correctness
             predicted_prob = probs[str(ord(sampled_solution) - 65)]
             correctness = 1 if sampled_solution == correct_option else 0
-        elif model in ['cot', 'chameleon']:
+        elif model in ['io', 'cot', 'chameleon']:
             predicted_prob = item['option_prob']
             correctness = 1 if item['true_false'] else 0
         else:
@@ -98,7 +98,7 @@ if __name__ == '__main__':
     # parse arguments
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument('--model', type=str, required=True, choices=['cot', 'chameleon', 'bcot-ticoh-s'])
+    parser.add_argument('--model', type=str, required=True, choices=['io', 'cot', 'chameleon', 'bcot-ticoh-s'])
     parser.add_argument('--file_path', type=str, required=True)
     parser.add_argument('--num_bins', type=int, default=10)
     parser.add_argument('--uniform_bins', action='store_true')

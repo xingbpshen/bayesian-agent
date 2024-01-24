@@ -20,7 +20,7 @@ def parse_args():
     parser.add_argument('--data_root', type=str, default='../data/scienceqa')
     parser.add_argument('--output_root', type=str, default='../results')
     # DO NOT CHANGE
-    parser.add_argument('--model', type=str, default='chameleon', choices=['cot', 'chameleon', 'bcot-ticoh-s'])
+    parser.add_argument('--model', type=str, default='chameleon', choices=['io', 'cot', 'chameleon', 'bcot-ticoh-s'])
     parser.add_argument('--label', type=str, default='chameleon_chatgpt')
     parser.add_argument('--task_name', type=str, default='scienceqa')
     parser.add_argument('--test_split', type=str, default='minitest', 
@@ -108,7 +108,7 @@ if __name__ == "__main__":
             modules = args.modules
             print(f"# [Modules]\n{modules}\n")
         else:
-            if args.model == 'cot':
+            if args.model in ['io', 'cot']:
                 modules = ["solution_generator", "answer_generator"]
             elif args.model in ['chameleon', 'bcot-ticoh-s']:
                 modules = solver.predict_modules()

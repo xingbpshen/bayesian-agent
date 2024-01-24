@@ -355,6 +355,34 @@ class solver:
         full_prompt = demo_prompt + "\n\n" + test_prompt
         return test_prompt, full_prompt
 
+    def build_prompt_for_sg_io(self):
+        question = self.cache["example"]["question"]
+        choices = self.cache["example"]["choices"]
+        hint = self.cache["example"]["hint"]
+        caption = self.cache["example"]["caption"]
+
+        # demo prompt
+        demo_prompt = prompt_sg.prompt_io.strip()  # WARNING: this is the prompt for COT
+
+        # option
+        inds = ["A", "B", "C", "D", "E"]
+        choice_list = [f"({inds[i]}) {choices[i]}" for i in range(len(choices))]
+        option = " ".join(choice_list)
+
+        # context
+        context = hint.strip()
+        if self.use_caption and caption != "":
+            context += f" Image: {caption}"
+
+        #  test prompt
+        if context != "":
+            test_prompt = f"Question: {question}\n\nContext: {context}\n\nOptions: {option}\n\nSolution: "
+        else:
+            test_prompt = f"Question: {question}\n\nOptions: {option}\n\nSolution: "
+
+        full_prompt = demo_prompt + "\n\n" + test_prompt
+        return test_prompt, full_prompt
+
     def solution_generator(self):
         # get the module input
         if self.model == "chameleon":
@@ -363,6 +391,8 @@ class solver:
             test_prompt, full_prompt = self.build_prompt_for_sg_bcot_ticoh_s()
         elif self.model == "cot":
             test_prompt, full_prompt = self.build_prompt_for_sg_cot()
+        elif self.model == "io":
+            test_prompt, full_prompt = self.build_prompt_for_sg_io()
         else:
             raise Exception("ERROR: solution_generator(self), invalid model name " + self.model)
 
@@ -500,7 +530,7 @@ class solver:
         inds = ["A", "B", "C", "D", "E"]
 
         # excute the module
-        if self.model in ["cot", "chameleon"]:
+        if self.model in ["io", "cot", "chameleon"]:
             success = False
             if output:
                 pattern = re.compile(r"[Tt]he answer is ([A-Z])") # "The answer is A.",
