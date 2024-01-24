@@ -392,7 +392,7 @@ class solver:
                     try:
                         # in the form of {0: 0.500, 1: 0.500, ...}, safe when empty dict,
                         # however, not safe when probs not sum to 1, we will normalize it later
-                        option_prob_dict_curr = extract_option_prob_from_solution(solution)
+                        option_prob_dict_curr = extract_option_prob_from_solution(solution, len(self.cache["example"]["choices"]))
                     except Exception as e:
                         print("Failed to obtain the option probabilities from the solution. Retrying...")
                         count += 1
@@ -520,7 +520,7 @@ class solver:
         return output, prediction
 
 
-def extract_option_prob_from_solution(text):
+def extract_option_prob_from_solution(text, num_options):
     """
     Return text as:
     P(Z3_{Option A} | Z2)=0.100\nP(Z3_{Option B} | Z2)=0.900\n
@@ -559,6 +559,9 @@ def extract_option_prob_from_solution(text):
     # check if probabilities_info is empty
     if len(probabilities_info) == 0:
         raise Exception("ERROR: extract_option_prob_from_solution(text), empty dict")
+    # check number of options
+    elif len(probabilities_info) != num_options:
+        raise Exception("ERROR: extract_option_prob_from_solution(text), options mismatch")
 
     return probabilities_info
 
