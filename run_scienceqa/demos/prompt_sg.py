@@ -8,9 +8,9 @@ Context: Select the better answer. Image: A pair of scissors next to a pair of s
 
 Options: (A) hard (B) bendable
 
-Solution: An object has different properties. A property of an object can tell you how it looks, feels, tastes, or smells.\nDifferent objects can have the same properties. You can use these properties to put objects into groups. Look at each object.\nFor each object, decide if it has that property.\nA bendable object can be bent without breaking. Both objects are bendable.\nA hard object keeps its shape when you squeeze it. The rubber gloves are not hard.\nThe property that both objects have in common is bendable.\n\nTherefore, the answer is B.
+Solution: An object has different properties. A property of an object can tell you how it looks, feels, tastes, or smells.\nDifferent objects can have the same properties. You can use these properties to put objects into groups. Look at each object.\nFor each object, decide if it has that property.\nA bendable object can be bent without breaking. Both objects are bendable.\nA hard object keeps its shape when you squeeze it. The rubber gloves are not hard.\nThe property that both objects have in common is bendable.
+Therefore, the answer is B.
 Probability: 0.925
-
 
 Question: Select the one substance that is not a mineral.
 
@@ -18,14 +18,19 @@ Context: Select the better answer.
 
 Options: (A) turtle shell is not a pure substance. It is made by a living thing (B) Celestine is a pure substance. It is a solid. (C) Hematite is not made by living things. It is a solid.
 
-Solution: Compare the properties of each substance to the properties of minerals. Select the substance whose properties do not match those of minerals.\nA turtle shell is made by a living thing. But minerals are not made by living things.\nA turtle shell is not a pure substance. But all minerals are pure substances.\nSo, a turtle shell is not a mineral.\nCelestine is a mineral.\nHematite is a mineral.\nTherefore, the answer is A.
+Solution: Compare the properties of each substance to the properties of minerals. Select the substance whose properties do not match those of minerals.\nA turtle shell is made by a living thing. But minerals are not made by living things.\nA turtle shell is not a pure substance. But all minerals are pure substances.\nSo, a turtle shell is not a mineral.\nCelestine is a mineral.\nHematite is a mineral.
+Therefore, the answer is A.
 Probability: 0.960
+
+In any situation even in case you cannot decide, do not say you cannot decide, you must strictly follow the format:
+Therefore, the answer is [ANSWER].
+Probability: [3 decimal places float ranging 0 to 1]
 """
 
 
 # chameleon ICL based on GPT-4
 prompt_chameleon = """
-Given the question (and the context), select the answer from the options ["A", "B", "C", "D", "E"]. You should give consice and step-by-step solutions. Finally, conclude the answer in the format of "the answer is [ANSWER]", where [ANSWER] is one from the options ["A", "B", "C", "D", "E"]. For example, "the answer is A", "the answer is B", "the answer is C", "the answer is D", or "the answer is E". If the answer is not in the options, select the most possible option. Then you need to provide a numerical probability with 3 decimal places for the answer, which is a number between 0.000 and 1.000, where 0.000 means the answer is impossible and 1.000 means the answer is certain.
+Given the question (and the context), select the answer from the options ["A", "B", "C", "D", "E"]. You should give consice and step-by-step solutions. Finally, conclude the answer in the format of "the answer is [ANSWER]", where [ANSWER] is one from the options ["A", "B", "C", "D", "E"]. For example, "the answer is A", "the answer is B", "the answer is C", "the answer is D", or "the answer is E". If the answer is not in the options, select the most possible option. Then you need to provide a numerical probability with 3 decimal places for the answer, for example "Probability: 0.900", which is a number between 0.000 and 1.000, where 0.000 means the answer is impossible and 1.000 means the answer is certain.
 
 Question: Which property do these two objects have in common?
 
@@ -78,6 +83,10 @@ Given the descriptions of the substances and the definition of a mineral, we can
 Comparing these options with the definition of a mineral, it's clear that the turtle shell is not a mineral because it is organic and made by a living thing.
 Therefore, the answer is A (turtle shell).
 Probability: 0.960
+
+In any situation even in case you cannot decide, do not say you cannot decide, you must strictly follow the format:
+Therefore, the answer is [ANSWER].
+Probability: [3 decimal places float ranging 0 to 1]
 """
 
 

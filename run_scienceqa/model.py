@@ -421,7 +421,6 @@ class solver:
             option_prob_dict = {_key: round(_value / num_sampling, 3) for _key, _value in option_prob_dict.items()}
             # for higher safety, normalize the probabilities (round to maximum 3 decimal places) if not sum to 1
             option_prob_dict = normalize_dict(option_prob_dict)
-            # TODO: deal with option_prob_dict
             self.cache["bcot_option_prob_dict"] = option_prob_dict
             # assign the self.cache["bcot_sampled_solution"] to the highest probability option
             # for example, if option_prob_dict = {0: 0.500, 1: 0.500}, then the highest probability option is 0
@@ -447,8 +446,8 @@ class solver:
 
             # Assign the result to the cache
             self.cache["bcot_sampled_solution"] = f"{option_letter}"
-            print(option_prob_dict)
         else:
+            _prob = None
             success = False
             count = 0
             while count < patience and not success:
@@ -460,11 +459,20 @@ class solver:
                 # parse the solution to obtain probabilities
                 try:
                     # TODO: implement this
-                    pass
+                    # find the "Probability: value" section in the solution, then get the numerical value and save it
+                    _pattern = re.compile(r"[Pp]robability: ([0-9.]+)")
+                    _res = _pattern.findall(solution)
+                    if len(_res) > 0:
+                        _prob = _res[0]
+                        _prob = float(_prob)
+                    else:
+                        raise Exception("ERROR: failed to obtain the option probabilities from the solution, "
+                                        "no probability found")
                 except Exception as e:
                     if count >= patience:
                         raise Exception("ERROR: failed to obtain the option probabilities from the solution, "
                                         "out-of-patience")
+                    print(solution)
                     print("Failed to obtain the option probabilities from the solution. Retrying...")
                     count += 1
                     continue
@@ -475,6 +483,7 @@ class solver:
                 count += 1
             if count >= patience:
                 raise Exception("ERROR: out-of-patience")
+            self.cache["option_prob"] = _prob
 
         # update the cache
         self.cache["solution"] = solution
