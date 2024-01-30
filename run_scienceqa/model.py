@@ -8,7 +8,7 @@ import openai
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from utilities import *
-from demos import prompt_policy, prompt_kr, prompt_sg, prompt_qg
+from demos import prompt_policy, prompt_kr, prompt_sg, prompt_qg, prompt_ic_hint
 
 # OpenAI
 openai.api_key = os.getenv("OPENAI_API_KEY")
@@ -38,7 +38,14 @@ class solver:
         _examples = json.load(open(os.path.join(self.data_root, "problems.json")))
 
         examples = {pid: _examples[pid] for pid in pid_splits[self.test_split]}
-        pids = list(examples.keys())
+        if self.test_trial in ["scienceqa-4241", "scienceqa-100"]:
+            pids = list(examples.keys())
+        elif self.test_trial == "scienceqa-3568":
+            # TODO: new code, run scienceqa_3568
+            with open(os.path.join(self.data_root, "scienceqa_3568.json"), 'r') as file:
+                pids = json.load(file)
+        else:
+            raise Exception("ERROR: load_data(self), invalid test_trial " + self.test_trial)
 
         # update metadata
         for pid, example in examples.items():
@@ -312,6 +319,30 @@ class solver:
         full_prompt = demo_prompt + "\n\n" + test_prompt # full prompt
         return test_prompt, full_prompt
 
+    def build_prompt_for_sg_chameleon_hybrid(self):
+        # get the input
+        question_text = self.get_question_text()
+        metadata = self.get_metadata()
+        response = self.cache["response"] if "response" in self.cache else ""
+
+        # build the prompt
+        demo_prompt = prompt_sg.prompt_chameleon.strip() # WARNING: this is the prompt for chameleon
+        ic_prompt = prompt_ic_hint.prompt_ic.strip()
+        # randomly select a hint from the list
+        someones_hint = random.choice(prompt_ic_hint.prompt_someones_hint)
+        # randomly select a number from 0 to len(self.cache["example"]["choices"]) - 1
+        someones_hint_ans_rand_idx = random.randint(0, len(self.cache["example"]["choices"]) - 1)
+        # change the rand_idx to a letter, e.g. 0 -> A, 1 -> B, etc.
+        someones_hint_ans_rand_letter = chr(someones_hint_ans_rand_idx + 65)
+        someones_hint = someones_hint + someones_hint_ans_rand_letter + "."
+
+        if response != "":
+            test_prompt = f"Question: {question_text}\n\nMetadata: {metadata}\n\n{response}\n\n{someones_hint}\n\nSolution: "
+        else:
+            test_prompt = f"Question: {question_text}\n\nMetadata: {metadata}\n\n{someones_hint}\n\nSolution: "
+        full_prompt = demo_prompt + "\n\n" + test_prompt # full prompt
+        return test_prompt, full_prompt
+
     def build_prompt_for_sg_bcot_ticoh_s(self):
         # get the input
         question_text = self.get_question_text()
@@ -393,6 +424,8 @@ class solver:
             test_prompt, full_prompt = self.build_prompt_for_sg_cot()
         elif self.model == "io":
             test_prompt, full_prompt = self.build_prompt_for_sg_io()
+        elif self.model == "chameleon-hybrid":
+            test_prompt, full_prompt = self.build_prompt_for_sg_chameleon()
         else:
             raise Exception("ERROR: solution_generator(self), invalid model name " + self.model)
 
@@ -424,6 +457,8 @@ class solver:
                         # however, not safe when probs not sum to 1, we will normalize it later
                         option_prob_dict_curr = extract_option_prob_from_solution(solution, len(self.cache["example"]["choices"]))
                     except Exception as e:
+                        print(self.cache["example"]["choices"])
+                        print(solution)
                         print("Failed to obtain the option probabilities from the solution. Retrying...")
                         count += 1
                         continue
@@ -476,7 +511,7 @@ class solver:
 
             # Assign the result to the cache
             self.cache["bcot_sampled_solution"] = f"{option_letter}"
-        else:
+        elif self.model in ["io", "cot", "chameleon"]:
             _prob = None
             success = False
             count = 0
@@ -506,15 +541,92 @@ class solver:
                     print("Failed to obtain the option probabilities from the solution. Retrying...")
                     count += 1
                     continue
-                pattern = re.compile(r"[Tt]he answer is ([A-Z])")  # "The answer is XXXXX.",
+                pattern = re.compile(r"[Tt]he answer is \(([A-Z])\)|[Tt]he answer is ([A-Z])")  # "The answer is XXXXX.",
                 res = pattern.findall(solution)
                 if len(res) > 0:
-                    success = True
+                    for _match in res:
+                        # match is a tuple, like ('', 'B') or ('A', '')
+                        _selected_option = [_group for _group in _match if _group][0]  # Get the non-empty group
+                    # translate the selected option to an index
+                    _selected_option_idx = ord(_selected_option) - 65
+                    if _selected_option_idx < len(self.cache["example"]["choices"]):
+                        success = True
+                    else:
+                        # debug
+                        print(solution)
                 count += 1
             if count >= patience:
                 print(solution)
                 raise Exception("ERROR: out-of-patience")
             self.cache["option_prob"] = _prob
+        elif self.model == "chameleon-hybrid":  # this is the hybrid model with self-consistency, we ask one time and additionally ask twice
+            num_sampling = 3  # this counts y0, y1, y2, so K = num_sampling - 1
+            _first_selected_option = None
+            _first_prob = None
+            _prob_sum = 0.0
+            _sg_temperature = self.sg_temperature
+            self.sg_temperature = 0.0  # set the temperature to 0.0 for the first sampling
+            for idx_sampling in range(num_sampling):
+                _selected_option = None  # in the form of "A", "B", "C", etc.
+                _prob = None
+                success = False
+                count = 0
+                while count < patience and not success:
+                    if self.sg_temperature < 0.1 and count > 0:
+                        _temperature = min(self.sg_temperature + 0.1, 1.0)
+                    else:
+                        _temperature = self.sg_temperature
+                    solution = get_chat_response(messages, self.api_key, self.sg_engine, _temperature, self.sg_max_tokens)
+                    # parse the solution to obtain probabilities
+                    try:
+                        # find the "Probability: value" section in the solution, then get the numerical value and save it
+                        _pattern = re.compile(r"[Pp]robability: ([0-9.]+)")
+                        _res = _pattern.findall(solution)
+                        if len(_res) > 0:
+                            _prob = _res[0]
+                            _prob = float(_prob)
+                        else:
+                            raise Exception("ERROR: failed to obtain the option probabilities from the solution, "
+                                            "no probability found")
+                    except Exception as e:
+                        if count >= patience:
+                            raise Exception("ERROR: failed to obtain the option probabilities from the solution, "
+                                            "out-of-patience")
+                        print(solution)
+                        print("Failed to obtain the option probabilities from the solution. Retrying...")
+                        count += 1
+                        continue
+                    pattern = re.compile(
+                        r"[Tt]he answer is \(([A-Z])\)|[Tt]he answer is ([A-Z])")  # "The answer is XXXXX.",
+                    res = pattern.findall(solution)
+                    if len(res) > 0:
+                        for _match in res:
+                            # match is a tuple, like ('', 'B') or ('A', '')
+                            _selected_option = [_group for _group in _match if _group][0]  # Get the non-empty group
+                        # translate the selected option to an index
+                        _selected_option_idx = ord(_selected_option) - 65
+                        if _selected_option_idx < len(self.cache["example"]["choices"]):
+                            success = True
+                            if _first_selected_option is None:
+                                _first_selected_option = _selected_option
+                                _first_prob = _prob
+                                self.sg_temperature = _sg_temperature  # reset the temperature to the original value
+                                self.cache["option_prob_s0"] = _prob
+                            else:
+                                if _selected_option == _first_selected_option:
+                                    _prob_sum += (_first_prob + _prob) / 2
+                                else:
+                                    _prob_sum += 1 - _prob
+                        else:
+                            # debug
+                            print(solution)
+                    count += 1
+                if count >= patience:
+                    print(solution)
+                    raise Exception("ERROR: out-of-patience")
+                # keep two decimal places
+                self.cache["option_prob"] = _prob_sum / (num_sampling - 1)
+                self.cache["chameleon_hybrid_solution"] = f"{_first_selected_option}"
 
         # update the cache
         self.cache["solution"] = solution
@@ -544,6 +656,9 @@ class solver:
                 prediction = normalize_prediction_scienceqa(output, options)
         elif self.model in ["bcot-ticoh-s"]:
             ans = self.cache["bcot_sampled_solution"]
+            prediction = options[inds.index(ans)]
+        elif self.model == "chameleon-hybrid":
+            ans = self.cache["chameleon_hybrid_solution"]
             prediction = options[inds.index(ans)]
         else:
             raise Exception("ERROR: answer_generator(self), invalid model name " + self.model)

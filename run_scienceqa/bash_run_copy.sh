@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # Settings
-test_trial=scienceqa-3568
+test_trial=scienceqa-100
 sg_temperature=0.2
 model=bcot-ticoh-s
-label=exp9
+label=exp12
 
 # Command to execute
 CMD="python run.py
@@ -35,4 +35,4 @@ done
 
 echo "Script completed."
 
-python ece.py --model $model --file_path ../results/scienceqa/${label}_test_cache.json --uniform_bins
+python ece.py --model $model --file_path ../results/scienceqa/${label}_test_cache.json --num_bins 10 --uniform_bins

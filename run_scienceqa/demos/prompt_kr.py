@@ -2,6 +2,8 @@
 prompt = """
 Read the following question, generate the background knowledge as the context information that could be helpful for answering the question.
 
+
+For example:
 Question: Which property do these three objects have in common? 
 
 Options: (A) hard (B) soft (C) yellow
@@ -18,6 +20,8 @@ Knowledge:
 - The option "hard" is generally not associated with these items, as they are designed for comfort and personal use, where a soft texture is typically preferred.
 - The color "yellow" is not a material property and can vary widely among handkerchiefs, slippers, and leisure suits. These items can be made in any color, so it's not a distinguishing feature.
 
+
+For another example:
 Question: The diagrams below show two pure samples of gas in identical closed, rigid containers. Each colored ball represents one gas particle. Both samples have the same number of particles. 
 
 Options: (A) neither; the samples have the same temperature (B) sample A (C) sample B
@@ -25,12 +29,15 @@ Options: (A) neither; the samples have the same temperature (B) sample A (C) sam
 Metadata: {'pid': 19, 'has_image': True, 'grade': 8, 'subject': 'natural science', 'topic': 'physics', 'category': 'Particle motion and energy', 'skill': 'Identify how particle motion affects temperature and pressure'}
 
 Knowledge:
+- Options: (A) neither; the samples have the same temperature (B) sample A (C) sample B
 - The kinetic theory of gases posits that the temperature of a gas is directly proportional to the average kinetic energy of its particles. This means that if the particles in a gas sample move more rapidly on average, the temperature of the gas is higher.
 - In a closed, rigid container, the volume of the gas and the number of particles are constant. Therefore, any differences in temperature between two gas samples under these conditions would be due to differences in the average kinetic energy of the particles.
 - Pressure in a closed container is caused by gas particles colliding with the container walls. The frequency and force of these collisions can be affected by the speed (kinetic energy) of the particles and their number. In this scenario, as the number of particles is the same in both samples, any difference in pressure would be due to differences in the average speed or kinetic energy of the particles.
 - If the diagrams show particles in one sample moving more rapidly or spread out than in the other, it would suggest a higher temperature for that sample, as more rapid motion or more spread-out particles indicate higher kinetic energy.
 - If the diagrams show a similar pattern of motion and distribution of particles in both samples, it would suggest that the samples have the same temperature, as the kinetic energy of the particles would be similar.
 
+
+For another example:
 Question: Think about the magnetic force between the magnets in each pair. Which of the following statements is true?
 
 Context: The images below show two pairs of magnets. The magnets in different pairs do not affect each other. All the magnets shown are made of the same material, but some of them are different shapes.  

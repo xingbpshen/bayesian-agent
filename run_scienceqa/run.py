@@ -20,7 +20,7 @@ def parse_args():
     parser.add_argument('--data_root', type=str, default='../data/scienceqa')
     parser.add_argument('--output_root', type=str, default='../results')
     # DO NOT CHANGE
-    parser.add_argument('--model', type=str, default='chameleon', choices=['io', 'cot', 'chameleon', 'bcot-ticoh-s'])
+    parser.add_argument('--model', type=str, default='chameleon', choices=['io', 'cot', 'chameleon', 'bcot-ticoh-s', 'chameleon-hybrid'])
     parser.add_argument('--label', type=str, default='chameleon_chatgpt')
     parser.add_argument('--task_name', type=str, default='scienceqa')
     parser.add_argument('--test_split', type=str, default='minitest', 
@@ -49,15 +49,15 @@ def parse_args():
     parser.add_argument('--use_caption', action='store_true', help='use image captions or not')
     parser.add_argument('--caption_file', type=str, default='../data/scienceqa/captions.json')
     # text detector
-    parser.add_argument('--ocr_file', type=str, default='../data/scienceqa/ocrs.json')
+    parser.add_argument('--ocr_file', type=str, default='../data/scienceqa/ocrs_wo_pos.json')
     # solution_generator
     parser.add_argument('--sg_engine', type=str, default="gpt-3.5-turbo", help='engine for solution generator')
     parser.add_argument('--sg_temperature', type=float, default=0.2, help='temperature for solution generator')
-    parser.add_argument('--sg_max_tokens', type=int, default=1024, help='max tokens for solution generator')
+    parser.add_argument('--sg_max_tokens', type=int, default=924, help='max tokens for solution generator')
     parser.add_argument('--sg_patience', type=int, default=10, help='patience for solution generator')
     # debug
     parser.add_argument('--debug', action='store_true')
-    parser.add_argument('--num_test_trial', type=int, default=0)
+    parser.add_argument('--test_trial', type=str, default='scienceqa-3568', choices=['scienceqa-100', 'scienceqa-3568', 'scienceqa-4241'])
     args = parser.parse_args()
 
     print('====Input Arguments====')
@@ -110,7 +110,7 @@ if __name__ == "__main__":
         else:
             if args.model in ['io', 'cot']:
                 modules = ["solution_generator", "answer_generator"]
-            elif args.model in ['chameleon', 'bcot-ticoh-s']:
+            elif args.model in ['chameleon', 'bcot-ticoh-s', 'chameleon-hybrid']:
                 modules = solver.predict_modules()
         modules = [f"solver.{module}" for module in modules]
             
@@ -147,8 +147,8 @@ if __name__ == "__main__":
             print(f"# [Prediction]\n{prediction}\n")
             print(f"# [true_false]\n{true_false}\n")
 
-        # debug
-        if args.num_test_trial > 0 and count == args.num_test_trial + 1:
+        # debug, run scienceqa-100
+        if args.test_trial == 'scienceqa-100' and count == 101:
             break
 
         acc = correct / count * 100

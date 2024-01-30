@@ -87,14 +87,16 @@ def get_chat_response(messages, api_key, model="gpt-3.5-turbo", temperature=0, m
                                                 api_key=api_key,
                                                 temperature=temperature,
                                                 max_tokens=max_tokens,
-                                                n=n)
+                                                n=n,)
             if n == 1:
                 prediction = response['choices'][0]['message']['content'].strip()
                 if prediction != "" and prediction != None:
+
                     return prediction
             else:
                 prediction = [choice['message']['content'].strip() for choice in response['choices']]
                 if prediction[0] != "" and prediction[0] != None:
+
                     return prediction
 
         except Exception as e:
