@@ -3,6 +3,7 @@ results/
 # data/scienceqa/images/
 run_scienceqa/posthoc_analysis.py
 run_scienceqa/plot.ipynb
+run_scienceqa/bash_run_copy.sh
 
 checkpoints/*.pt
 
