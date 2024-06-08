@@ -20,7 +20,7 @@ def parse_args():
     parser.add_argument('--data_root', type=str, default='../data/scienceqa')
     parser.add_argument('--output_root', type=str, default='../results')
     # DO NOT CHANGE
-    parser.add_argument('--model', type=str, default='chameleon', choices=['io', 'cot', 'chameleon', 'bcot-ticoh-s', 'chameleon-hybrid'])
+    parser.add_argument('--model', type=str, default='chameleon', choices=['io', 'cot', 'chameleon', 'bcot-ticoh-s', 'chameleon-hybrid', 'bcot-ticoh-l'])
     parser.add_argument('--label', type=str, default='chameleon_chatgpt')
     parser.add_argument('--task_name', type=str, default='scienceqa')
     parser.add_argument('--test_split', type=str, default='minitest', 
@@ -53,8 +53,9 @@ def parse_args():
     # solution_generator
     parser.add_argument('--sg_engine', type=str, default="gpt-3.5-turbo", help='engine for solution generator')
     parser.add_argument('--sg_temperature', type=float, default=0.2, help='temperature for solution generator')
-    parser.add_argument('--sg_max_tokens', type=int, default=924, help='max tokens for solution generator')
+    parser.add_argument('--sg_max_tokens', type=int, default=1024, help='max tokens for solution generator')
     parser.add_argument('--sg_patience', type=int, default=10, help='patience for solution generator')
+    parser.add_argument('--sg_num_samplings', type=int, default=3, help='number of samplings for solution generator')
     # debug
     parser.add_argument('--debug', action='store_true')
     parser.add_argument('--test_trial', type=str, default='scienceqa-3568', choices=['scienceqa-100', 'scienceqa-3568', 'scienceqa-4241'])
@@ -96,6 +97,9 @@ if __name__ == "__main__":
     for pid in tqdm(pids):
         solver.cache = {"pid": pid} # clear the cache
 
+        if pid not in ["16788", "16797"]:
+            continue
+
         if args.debug or count < 10:
             print("\n\n===================================\n")
             print(f"# [Pid]: {pid}\n") # problem id
@@ -110,7 +114,7 @@ if __name__ == "__main__":
         else:
             if args.model in ['io', 'cot']:
                 modules = ["solution_generator", "answer_generator"]
-            elif args.model in ['chameleon', 'bcot-ticoh-s', 'chameleon-hybrid']:
+            elif args.model in ['chameleon', 'bcot-ticoh-s', 'chameleon-hybrid', 'bcot-ticoh-l']:
                 modules = solver.predict_modules()
         modules = [f"solver.{module}" for module in modules]
             

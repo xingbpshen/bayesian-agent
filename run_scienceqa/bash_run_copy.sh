@@ -2,9 +2,10 @@
 
 # Settings
 test_trial=scienceqa-100
-sg_temperature=0.2
-model=bcot-ticoh-s
-label=exp12
+sg_temperature=0.2  # set 0.2 for chameleon-hybrid, bcot-ticoh-s, bcot-ticoh-l, set 0 otherwise
+sg_num_samplings=1  # for chameleon-hybrid, bcot-ticoh-s, bcot-ticoh-l
+model=bcot-ticoh-l  # choose from cot, chameleon, chameleon-hybrid, bcot-ticoh-s, bcot-ticoh-l
+label=exp15
 
 # Command to execute
 CMD="python run.py
@@ -17,6 +18,7 @@ CMD="python run.py
       --test_trial $test_trial
       --model $model
       --sg_temperature $sg_temperature
+      --sg_num_samplings $sg_num_samplings
       --label $label
     "
 

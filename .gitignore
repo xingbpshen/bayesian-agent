@@ -1,6 +1,8 @@
 env/
 results/
 # data/scienceqa/images/
+run_scienceqa/posthoc_analysis.py
+run_scienceqa/plot.ipynb
 
 checkpoints/*.pt
 

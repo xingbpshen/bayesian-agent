@@ -25,7 +25,7 @@ class solver:
         for key, value in vars(args).items():
             setattr(self, key, value)
         # for chameleon
-        if self.model in ["cot", "chameleon", "bcot-ticoh-s"]:
+        if self.model in ["cot", "chameleon", "bcot-ticoh-s", "chameleon-hybrid", "bcot-ticoh-l"]:
             self.use_caption = False # disabled by default, could be enabled by the policy
 
         # external arguments
@@ -358,6 +358,21 @@ class solver:
         full_prompt = demo_prompt + "\n\n" + test_prompt # full prompt
         return test_prompt, full_prompt
 
+    def build_prompt_for_sg_bcot_ticoh_l(self):
+        # get the input
+        question_text = self.get_question_text()
+        metadata = self.get_metadata()
+        response = self.cache["response"] if "response" in self.cache else ""
+
+        # build the prompt
+        demo_prompt = prompt_sg.prompt_bcot_ticoh_l.strip() # WARNING: this is the prompt for BCoT-TiCoh-S
+        if response != "":
+            test_prompt = f"Question: {question_text}\n\nMetadata: {metadata}\n\n{response}\n\nSolution: "
+        else:
+            test_prompt = f"Question: {question_text}\n\nMetadata: {metadata}\n\nSolution: "
+        full_prompt = demo_prompt + "\n\n" + test_prompt # full prompt
+        return test_prompt, full_prompt
+
     def build_prompt_for_sg_cot(self):
         question = self.cache["example"]["question"]
         choices = self.cache["example"]["choices"]
@@ -426,6 +441,8 @@ class solver:
             test_prompt, full_prompt = self.build_prompt_for_sg_io()
         elif self.model == "chameleon-hybrid":
             test_prompt, full_prompt = self.build_prompt_for_sg_chameleon()
+        elif self.model == "bcot-ticoh-l":
+            test_prompt, full_prompt = self.build_prompt_for_sg_bcot_ticoh_l()
         else:
             raise Exception("ERROR: solution_generator(self), invalid model name " + self.model)
 
@@ -436,8 +453,8 @@ class solver:
         # excute the module
         patience = self.sg_patience
 
-        if self.model == "bcot-ticoh-s":
-            num_sampling = 3
+        if self.model in ["bcot-ticoh-s", "bcot-ticoh-l"]:
+            num_sampling = self.sg_num_samplings
             # in the form of {0: 0.500, 1: 0.500, ...}
             option_prob_dict = None
             for idx_sampling in range(num_sampling):
@@ -475,6 +492,7 @@ class solver:
                             # add current probabilities to the existing dictionary, key by key
                             for key in option_prob_dict:
                                 option_prob_dict[key] += option_prob_dict_curr[key]
+                        self.cache["bcot_sampled_solution_{}".format(idx_sampling)] = solution
                         # change flag when all good, proceed to the next sampling
                         success = True
                     count += 1
@@ -560,7 +578,8 @@ class solver:
                 raise Exception("ERROR: out-of-patience")
             self.cache["option_prob"] = _prob
         elif self.model == "chameleon-hybrid":  # this is the hybrid model with self-consistency, we ask one time and additionally ask twice
-            num_sampling = 3  # this counts y0, y1, y2, so K = num_sampling - 1
+            # this counts y0, y1, y2, so K = num_sampling - 1
+            num_sampling = self.sg_num_samplings
             _first_selected_option = None
             _first_prob = None
             _prob_sum = 0.0
@@ -654,7 +673,7 @@ class solver:
                         prediction = options[inds.index(ans)]
             if not success:
                 prediction = normalize_prediction_scienceqa(output, options)
-        elif self.model in ["bcot-ticoh-s"]:
+        elif self.model in ["bcot-ticoh-s", "bcot-ticoh-l"]:
             ans = self.cache["bcot_sampled_solution"]
             prediction = options[inds.index(ans)]
         elif self.model == "chameleon-hybrid":

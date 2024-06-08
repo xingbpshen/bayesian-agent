@@ -47,7 +47,7 @@ def calculate_ece(data, model, num_bins=10, uniform_bins=False):
         bins = defaultdict(lambda: {'confidence_sum': 0, 'accuracy_sum': 0, 'total': 0})
     for item in data:
         # Extract information
-        if model == 'bcot-ticoh-s':
+        if model in ["bcot-ticoh-s", "bcot-ticoh-l"]:
             probs = item['bcot_option_prob_dict']
             sampled_solution = item['bcot_sampled_solution']
             correct_option_index = item['example']['answer']  # Index of the correct answer
@@ -116,7 +116,7 @@ def calculate_correlation(data, model):
     option_prob_dicts = []
     for item in tqdm(data):
         # Extract information
-        if model == 'bcot-ticoh-s':
+        if model in ["bcot-ticoh-s", "bcot-ticoh-l"]:
             probs = item['bcot_option_prob_dict']
             option_prob_dicts.append(probs)
             sampled_solution = item['bcot_sampled_solution']
@@ -223,7 +223,7 @@ def calculate_auroc_pr(data, model):
     predictions = []
     for item in data:
         # Extract information
-        if model == 'bcot-ticoh-s':
+        if model in ["bcot-ticoh-s", "bcot-ticoh-l"]:
             probs = item['bcot_option_prob_dict']
             sampled_solution = item['bcot_sampled_solution']
             correct_option_index = item['example']['answer']  # Index of the correct answer
@@ -278,7 +278,7 @@ if __name__ == '__main__':
     # parse arguments
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument('--model', type=str, required=True, choices=['io', 'cot', 'chameleon', 'bcot-ticoh-s', 'chameleon-hybrid'])
+    parser.add_argument('--model', type=str, required=True, choices=['io', 'cot', 'chameleon', 'bcot-ticoh-s', 'chameleon-hybrid', "bcot-ticoh-l"])
     parser.add_argument('--file_path', type=str, required=True)
     parser.add_argument('--num_bins', type=int, default=10)
     parser.add_argument('--uniform_bins', action='store_true')
@@ -305,7 +305,7 @@ if __name__ == '__main__':
     print(f"AUPRC-Negative (PR-N): {auprc_negative}")
 
     # Calculate correlations
-    if args.model == 'bcot-ticoh-s':
+    if args.model in ["bcot-ticoh-s"]:
         corr_z1, corr_z2 = calculate_correlation(data, args.model)
         # Assuming corr_z1 and corr_z2 are tuples like (pearson_corr, spearman_corr)
         print(f"Correlation Z1 (pearson, spearman): ({corr_z1[0]:.4f}, {corr_z1[1]:.4f})")

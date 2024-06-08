@@ -131,34 +131,29 @@ prompt_bcot_ticoh_l = """
 We have a science question that requires a careful analysis to identify the correct answer. The decision-making process is structured into a series of steps, each focusing on specific aspects of the information provided. Let's approach this systematically:
 
 Assess Knowledge Relevance (Z1):
-- Question: [Insert Question]
-- Context: [Insert Context]
-- Retrieved Knowledge: [Insert Retrieved Knowledge]
-- Bing Search Response: [Insert Bing Search Response]
-- Detected Text: [Insert Detected Text]
-Based on these inputs, evaluate the relevance of each piece of information to the question. You must provide a detailed step-by-step description that reflects your evaluation.  Assign a relevance score with 3 decimal places from 0 to 1 for each, where 1 indicates highly relevant.
+- Consider the question, context, retrieved knowledge, and Bing search response.
+- Evaluate how well this information aligns with the question's requirements.
 
-Analyze Text-Image Coherence (Z2):
-- Image Caption: [Insert Image Caption]
-- Detected Text: [Insert Detected Text]
-- Relevance Scores: [Insert Relevance Scores from Z1]
-Analyze the coherence between the image caption and the detected text. Consider the relevance scores from Z1 in your analysis. Is there a significant discrepancy or a strong coherence? Provide a coherence score from 0 to 1, where 1 indicates strong coherence.
+Evaluate Text-Image Semantic Coherence (Z2):
+- Analyze the coherence between the image caption and the detected text.
+- Determine which source of information is more reliable for this specific question.
 
-Evaluate and Compare Answer Options (Z3):
-- Answer Options: [Insert Answer Options]
-- Information from Z1 and Z2: [Summarize the key information from Z1 and Z2]
-Compare each answer option against the question and the context, using the information evaluated in Z1 and Z2. Discuss the strengths and weaknesses of each option and how they relate to the provided information.
+Analyze Option Evaluation Similarity (Z3):
+- Based on the relevance of the provided knowledge (Z1), compare and evaluate each answer option.
+- Consider how well each option correlates with the essential knowledge.
 
-Construct Reasoning Pathway (Z4):
-Based on the evaluations from Z3, construct a detailed reasoning pathway for each answer option. This should be a logical sequence of thoughts that leads to a conclusion about each option's validity. You must provide the reasoning pathway as text as detailed as possible, do not take anything as guaranteed, you must explain every claim you make.
+Conduct Logical Reasoning Sequence (Z4):
+- Based on the knowledge relevance (Z1) and the evaluation of options (Z3), logically reason through each answer option.
+- Ensure that the reasoning follows a coherent, step-by-step process.
 
-Make a Decision with Confidence (Z5):
-Integrate the evaluations and reasoning from Z1 to Z4. For each answer option, provide a probability with 3 decimal places that represents your confidence in the option being correct. Ensure that the probabilities sum up to 1.
+Calculate Confidence Distribution (Z5):
+- Integrate the assessments from Z1, Z2, Z3, and Z4.
+- Use this integrated evaluation to assign a confidence level to each answer option, ensuring that the sum of all options' probabilities equals 1.
 
-Proceed with the analysis, ensuring that each step is logically derived from the provided information and the outcomes of the preceding steps. Finally, conclude the answer in the form of "The answer is <correct option> with numerical probability <numerical probability>", for example, "The answer is A with numerical probability 0.85" or "The answer is B with numerical probability 0.9".
+Proceed with the analysis, ensuring that each variable is logically derived from the provided information and the outcomes of the depending variables. Finally, you must conclude one answer in the form of "The answer is <correct option> with numerical probability of <correct option’s numerical probability with 3 decimal places>", for example, "The answer is A with numerical probability of 0.852" or "The answer is B with numerical probability of 0.904".
+
 
 Consider the following examples:
-
 Example 1:
 Question: Which property do these two objects have in common?
 
@@ -173,73 +168,53 @@ Image caption: A pair of scissors next to a pair of scissors.
 Detected text with coordinates in the image: [([[53, 185], [121, 185], [121, 199], [53, 199]], 'jump rope'), ([[233, 183], [323, 183], [323, 201], [233, 201]], 'rubber gloves')] 
 
 Retrieved knowledge: 
-- This question is about comparing the properties of two objects: a jump rope and rubber gloves.
-- The focus is on the topic of physics under the category of Materials, specifically addressing the skill of comparing properties of objects in Grade 2.
-- Properties of materials commonly compared in this context include physical characteristics such as hardness and flexibility.
-- A jump rope is typically made of materials that are flexible and bendable to allow for the ease of movement and looping during use.
-- Rubber gloves are made from materials that are also flexible and bendable, designed to fit comfortably over the hands while providing protection and maintaining dexterity.
-- Understanding the characteristics of hardness and bendability can help in determining the common property between these two objects. Hardness relates to the resistance of a material to deformation or indentation, while bendability refers to the material's capacity to bend without breaking.
+- This question is about comparing the properties of two objects: rubber gloves and rain boots.
+- The objects are related to the topic of physics and the skill of comparing properties of objects.
+- Properties of objects can include physical characteristics such as color, texture, shape, size, weight, and material. In this case, the two objects have the property of being bendable in common.
 
 Bing search response: The most common materials used for disposable gloves are Latex, Vinyl and Nitrile. Each material has its benefits and drawbacks. Latex Gloves are constructed from Natural Rubber Latex and are the most popular type of disposable glove.
 
 Solution:
 Assess Knowledge Relevance (Z1):
-Inputs:
-1. Question: Which property do these two objects have in common?
-2. Context: Select the better answer.
-3. Retrieved Knowledge: The question pertains to comparing properties of two objects, focusing on physical characteristics such as hardness and flexibility. A jump rope is bendable, while rubber gloves are made from materials that are also flexible and bendable.
-4. Bing Search Response: Common materials for disposable gloves include Latex, Vinyl, and Nitrile, highlighting that they are made from materials that have certain degrees of flexibility.
-Evaluation:
-- Question Relevance: The question directly asks to identify a common property between the two given objects (jump rope and rubber gloves).
-- Context Relevance: The context focuses on comparing two options: hard and bendable, which aligns with the comparison of physical characteristics of the objects.
-- Retrieved Knowledge Relevance: The retrieved knowledge provides insight into the physical properties of the objects in question, aligning closely with the context and the question's requirement.
-- Bing Search Response Relevance: The response provides details about the materials of one of the objects (rubber gloves), which is relevant for understanding their properties.
-Relevance Scores:
-- Question: 0.991 (directly addresses the requirement)
-- Context: 0.989 (directly related to the options provided)
-- Retrieved Knowledge: 0.968 (provides necessary information about the properties of the objects)
-- Bing Search Response: 0.792 (useful for understanding the properties of rubber gloves)
+- Question and Context: The task is to identify a common property between two objects.
+- Knowledge Retrieved: It suggests the objects are rubber gloves and jump ropes, with a focus on their physical properties.
+- Bing Search Response: It provides information about materials used for disposable gloves but does not mention jump ropes.
+- Alignment with Question's Requirements**: The retrieved knowledge is directly relevant as it focuses on the physical properties of objects, which is essential for comparing rubber gloves and jump ropes. The Bing search response is partially relevant as it only provides information about one of the objects (rubber gloves).
+Probability:
+P(Z1 | question, context, knowledge retrieved, Bing search response) = 0.9000
 
-Analyze Text-Image Coherence (Z2):
-Inputs:
-- Image Caption: A pair of scissors next to a pair of scissors.
-- Detected Text: 'jump rope' and 'rubber gloves'
-Relevance Scores from Z1: [0.991, 0.989, 0.968, 0.792]
-Analysis:
-The image caption does not match the detected text, which mentions 'jump rope' and 'rubber gloves'. This discrepancy suggests an issue either with the image caption or the text detection. However, the relevance scores from Z1 indicate that the information about 'jump rope' and 'rubber gloves' is highly relevant to the question.
-Coherence Score:
-Score: 0.185 (significant discrepancy between the image caption and detected text, but the detected text is relevant to the question)
+Evaluate Text-Image Semantic Coherence (Z2):
+- Image Caption: "A pair of scissors next to a pair of scissors."
+- Detected Text in Image: "jump rope" and "rubber gloves."
+- Coherence and Reliability: The detected text does not match the image caption, indicating a discrepancy.
+Probability:
+P(Z2 | image caption, detected text) = 0.1000
 
-Evaluate and Compare Answer Options (Z3):
-Answer Options:
-- (A) hard
-- (B) bendable
-Information from Z1 and Z2:
-- The question and context focus on identifying a common property between a jump rope and rubber gloves.
-- Retrieved knowledge and search response suggest that both objects are characterized by flexibility and bendability.
-Evaluation:
-- Option A (hard): Neither a jump rope nor rubber gloves are typically characterized as 'hard'. This option does not align well with the retrieved knowledge or the bing search response.
-- Option B (bendable): Both a jump rope and rubber gloves are described as flexible and bendable, aligning well with the retrieved knowledge and the bing search response.
-Strengths and Weaknesses:
-- Strength of Option B: Direct alignment with the retrieved knowledge and bing search response about the properties of the objects.
-- Weakness of Option A: Does not correlate with the known properties of the objects in question.
+Analyze Option Evaluation Similarity (Z3):
+Based on Z1: The retrieved knowledge and partial Bing search response suggest analyzing physical properties.
+Comparison with Answer Options:
+- Option A (Hard): Neither rubber gloves nor jump ropes are typically described as hard.
+- Option B (Bendable): Both rubber gloves and jump ropes are known for their flexibility and bendability.
+Probabilities:
+P(Z3_{Option A} | Z1) = 0.1000
+P(Z3_{Option B} | Z1) = 0.9000
 
-Construct Reasoning Pathway (Z4):
-For Option A (hard):
-- Step 1: Assess the properties of a jump rope and rubber gloves.
-- Step 2: Compare these properties with the characteristic 'hard'.
-- Step 3: Conclude that 'hard' does not align with the known properties of flexibility and bendability for both objects.
-For Option B (bendable):
-- Step 1: Assess the properties of a jump rope and rubber gloves.
-- Step 2: Compare these properties with the characteristic 'bendable'.
-- Step 3: Conclude that 'bendable' aligns well with the known properties of both objects, indicating it is the common property.
+Conduct Logical Reasoning Sequence (Z4):
+Based on Z1 and Z3:
+- Option A (Hard): Contradicts the common physical properties of rubber gloves and jump ropes.
+- Option B (Bendable): Aligns well with the properties of both objects.
+Probabilities:
+P(Z4_{Option A} | Z1, Z3) = 0.1000
+P(Z4_{Option B} | Z1, Z3) = 0.9000
 
-Make a Decision with Confidence (Z5):
-- For Option A (hard): Probability = 0.094 (Low probability due to misalignment with known properties of the objects)
-- For Option B (bendable): Probability = 0.906 (High probability due to strong alignment with known properties of the objects)
+Calculate Confidence Distribution (Z5):
+Integrating Z1, Z2, Z3, and Z4, and we need to ensure that these probabilities sum up to 1.
+Probabilities:
+P(Z5_{Option A} | Z1, Z2, Z3, Z4)=0.0010
+P(Z5_{Option B} | Z1, Z2, Z3, Z4)=0.9990
 
-Based on the comprehensive analysis, the decision is:
-The answer is B (bendable) with numerical probability 0.906.
+Conclusion:
+The answer is B with a numerical probability of 0.9990.
 
 
 Example 2:
@@ -265,64 +240,66 @@ Retrieved knowledge:
 
 Solution:
 Assess Knowledge Relevance (Z1):
-Inputs:
-1. Question: Select the one substance that is not a mineral.
-2. Context: Select the better answer.
-3. Retrieved Knowledge: Key characteristics of minerals include being inorganic, solid, having a definite chemical composition, and a crystalline structure. Turtle shells are organic, Celestine and Hematite are inorganic and meet the criteria for minerals.
-4. Bing Search Response: Defines nonminerals as substances that do not satisfy the definition of a mineral, sometimes used similarly to minerals.
-Evaluation:
-- Question Relevance: The question directly asks to identify the substance that is not a mineral.
-- Context Relevance: The context provides a clear choice between three options, focusing on distinguishing characteristics relevant to mineral classification.
-- Retrieved Knowledge Relevance: Provides detailed information about what constitutes a mineral and the nature of the given substances, aligning closely with the context and the question's requirement.
-- Bing Search Response Relevance: Provides a general definition of nonminerals, supplementing the understanding of what does not constitute a mineral.
-Relevance Scores:
-- Question: 1.0 (directly addresses the requirement)
-- Context: 1.0 (provides clear options for comparison)
-- Retrieved Knowledge: 1.0 (offers crucial information for making the distinction)
-- Bing Search Response: 0.7 (useful but less specific than the retrieved knowledge)
-Analyze Text-Image Coherence (Z2):
-Since there is no mention of specific image content or detected text in the inputs provided for this question, this step will not be applicable for the current analysis. We will proceed based on the relevance scores from Z1 and the provided information.
-Coherence Score:
-- Score: N/A (no image content or detected text provided)
+- Question and Context: The task is to identify which substance is not a mineral.
+- Knowledge Retrieved: It outlines the characteristics of minerals and provides details about the nature of turtle shells, celestine, and hematite.
+- Bing Search Response: It defines nonminerals and hints at their usage, aligning with the need to distinguish non-minerals from minerals.
+Probability:
+P(Z1 | question, context, knowledge retrieved, Bing search response) = 0.9500
 
-Evaluate and Compare Answer Options (Z3):
-Answer Options:
-- (A) Turtle shell is not a pure substance. It is made by a living thing.
-- (B) Celestine is a pure substance. It is a solid.
-- (C) Hematite is not made by living things. It is a solid.
-Information from Z1:
-- Minerals are inorganic, not made by living things, solid, and have a specific crystalline structure.
-- Turtle shells are organic and made by living things.
-- Celestine and Hematite meet the criteria for being minerals.
-Evaluation:
-- Option A (Turtle shell): Matches the criteria for a nonmineral as it is made by a living thing (organic).
-- Option B (Celestine): Does not match the criteria for a nonmineral as it is an inorganic and solid substance with a crystalline structure.
-- Option C (Hematite): Does not match the criteria for a nonmineral as it is an inorganic and solid substance with a crystalline structure.
-Strengths and Weaknesses:
-- Strength of Option A: Directly aligns with the key characteristic of nonminerals (being organic or made by living things).
-- Weakness of Options B and C: Both are inorganic and meet the criteria for being classified as minerals.
+Evaluate Text-Image Semantic Coherence (Z2):
+No image caption or detected text was provided in this case, so this step will not contribute to the decision-making process in this instance.
+Probability:
+P(Z2 | image caption, detected text) is not applicable here.
 
-Construct Reasoning Pathway (Z4):
-For Option A (Turtle shell):
-- Step 1: Identify the defining characteristics of a mineral.
-- Step 2: Assess that turtle shells are made by living organisms and are organic.
-- Step 3: Conclude that turtle shells do not meet the criteria for being a mineral.
-For Options B (Celestine) and C (Hematite):
-- Step 1: Identify the defining characteristics of a mineral.
-- Step 2: Recognize that both Celestine and Hematite are inorganic, solid, and have a crystalline structure.
-- Step 3: Conclude that both Celestine and Hematite meet the criteria for being classified as minerals.
+Analyze Option Evaluation Similarity (Z3):
+Based on Z1: The retrieved knowledge emphasizes that minerals are inorganic, solid, have a definite chemical composition, and a crystalline structure, and are not made by living organisms.
+Comparison with Answer Options:
+- Option A (Turtle shell): Organic, made by a living organism.
+- Option B (Celestine): Inorganic, a solid, fits the criteria of a mineral.
+- Option C (Hematite): Inorganic, a solid, fits the criteria of a mineral.
+Probabilities:
+P(Z3_{Option A} | Z1) = 0.9500
+P(Z3_{Option B} | Z1) = 0.0250
+P(Z3_{Option C} | Z1) = 0.0250
 
-Make a Decision with Confidence (Z5):
-- For Option A (Turtle shell): Probability = 0.9 (High probability due to alignment with nonmineral characteristics)
-- For Options B (Celestine): Probability = 0.05 (Low probability due to alignment with mineral characteristics)
-- For Options C (Hematite): Probability = 0.05 (Low probability due to alignment with mineral characteristics)
+Conduct Logical Reasoning Sequence (Z4):
+Based on Z1 and Z3:
+- Option A (Turtle shell): Aligns with the definition of a non-mineral.
+- Option B (Celestine): Fits the criteria of a mineral.
+- Option C (Hematite): Fits the criteria of a mineral.
+Probabilities:
+P(Z4_{Option A} | Z1, Z3) = 0.9500
+P(Z4_{Option B} | Z1, Z3) = 0.0250
+P(Z4_{Option C} | Z1, Z3) = 0.0250
 
-Based on the comprehensive analysis, the decision is:
-The answer is A (Turtle shell is not a pure substance. It is made by a living thing) with numerical probability 0.9.
+Calculate Confidence Distribution (Z5):
+Integrating Z1, Z3, and Z4 (Z2 is not applicable), and we need to ensure that these probabilities sum up to 1.
+Probabilities:
+P(Z5_{Option A} | Z1, Z2, Z3, Z4)=0.9970
+P(Z5_{Option B} | Z1, Z2, Z3, Z4)=0.0015
+P(Z5_{Option C} | Z1, Z2, Z3, Z4)=0.0015
+
+Conclusion:
+The answer is A with a numerical probability of 0.997.
+
+
+IMPORTANT: If there are more than one option with the same highest probability, you must randomly select one with the highest probability and strictly follow the format of "The answer is <correct option> with numerical probability of <correct option’s numerical probability with 3 decimal places>", for example, "The answer is A with numerical probability of 0.852" or "The answer is B with numerical probability of 0.904".
+For example:
+Conclusion:
+Due to the absence of any supporting evidence for any option, the answer is A with numerical probability of 0.852 from random selection".
+
+Conclusion:
+Due to the absence of any supporting evidence for any option, the answer is B with numerical probability of 0.852 from random selection".
+
+Conclusion:
+Due to the absence of any supporting evidence for any option, the answer is C with numerical probability of 0.852 from random selection".
+
+Conclusion:
+Due to the absence of any supporting evidence for any option, the answer is D with numerical probability of 0.852 from random selection".
 """
 
 
-# # BCoT-TICoh prompt for ScienceQA-100
+# BCoT-TICoh prompt for ScienceQA-100
 # prompt_bcot_ticoh_s = """
 # We have a science question that requires a careful analysis to identify the correct answer. The decision-making process is structured into a series of steps, each focusing on specific aspects of the information provided. Let's approach this systematically:
 #
@@ -380,7 +357,7 @@ The answer is A (Turtle shell is not a pure substance. It is made by a living th
 # - Discrepancy: There's a significant discrepancy between the detected text and the image caption. The decision should weigh more on the detected text as it aligns better with the retrieved knowledge about rubber gloves.
 # Given the alignment of detected text with the retrieved knowledge and the notable discrepancy with the image caption, the probability of Z2 accurately reflecting the meaning difference and assigning appropriate weightage is relatively high.
 # Probability:
-# P(Z2 | Z1,Detected Text, Image Caption)=0.800
+# P(Z2 | Z1, Detected Text, Image Caption)=0.800
 #
 # Make a Decision with Confidence (Variable Z3)
 # Analysis:
@@ -463,7 +440,7 @@ Analyzing Textual and Visual Information (Variable Z2):
 
 Make a Decision with Confidence (Variable Z3):
 - Integrate the evaluations and reasoning from Z1 to Z2. For each answer option, provide a probability that represents your confidence in the option being correct. Ensure the probabilities sum up to 1.
-- Proceed with the analysis, ensuring that each variable is logically derived from the provided information and the outcomes of the depending variables. 
+- Proceed with the analysis, ensuring that each variable is logically derived from the provided information and the outcomes of the depending variables.
 
 Finally, you must conclude exact one answer in the form of "The answer is <correct option> with numerical probability of <correct option’s numerical probability with 3 decimal places>", for example, "The answer is A with numerical probability of 0.852" or "The answer is B with numerical probability of 0.904". Note that all probabilities you calculated should be in 3 decimal places, and you should make the reasoning of Bayesian inference be more concise. If you encountered more than one option with the same highest probability, you should randomly select one with the highest probability.
 
@@ -480,9 +457,9 @@ Metadata: {'pid': 6493, 'has_image': True, 'grade': 2, 'subject': 'natural scien
 
 Image caption: A pair of scissors next to a pair of scissors.
 
-Detected text with coordinates in the image: [([[53, 185], [121, 185], [121, 199], [53, 199]], 'jump rope'), ([[233, 183], [323, 183], [323, 201], [233, 201]], 'rubber gloves')] 
+Detected text with coordinates in the image: [([[53, 185], [121, 185], [121, 199], [53, 199]], 'jump rope'), ([[233, 183], [323, 183], [323, 201], [233, 201]], 'rubber gloves')]
 
-Retrieved knowledge: 
+Retrieved knowledge:
 - This question is about comparing the properties of two objects: rubber gloves and rain boots.
 - The objects are related to the topic of physics and the skill of comparing properties of objects.
 - Properties of objects can include physical characteristics such as color, texture, shape, size, weight, and material. In this case, the two objects have the property of being bendable in common.
