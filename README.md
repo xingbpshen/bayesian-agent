@@ -24,17 +24,10 @@ This repository contains code adapted from repository [chameleon-llm](https://gi
 If you find this repository useful in your research, please cite our paper:
 
 ```
-
 @article{huang2024verbalized,
-
   title={Verbalized Probabilistic Graphical Modeling with Large Language Models},
-
   author={Huang, Hengguan and Shen, Xing and Wang, Songtao and Liu, Dianbo and Wang, Hao},
-
   journal={arXiv preprint arXiv:2406.05516},
-
   year={2024}
-
 }
-
 ```
