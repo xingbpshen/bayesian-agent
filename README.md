@@ -8,13 +8,16 @@ This repository contains the official implementation of the paper:
 > __[Paper](https://arxiv.org/abs/2406.05516)&nbsp;/ [BibTeX]()__
 
 ## Setup
-coming soon
+Install the required packages:
+```bash
+pip install -r requirements.txt
+```
 
-## Training
-coming soon
-
-## Evaluation
-coming soon
+## Run ScienceQA
+```bash
+cd run_scienceqa
+bash bash_run.sh
+```
 
 ## Acknowledgement
 This repository contains code adapted from repository [chameleon-llm](https://github.com/lupantech/chameleon-llm). We thank to the above repository's authors for their great work.
