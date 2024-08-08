@@ -1,6 +1,7 @@
 env/
 results/
 # data/scienceqa/images/
+data/aokvqa/
 run_scienceqa/posthoc_analysis.py
 run_scienceqa/plot.ipynb
 run_scienceqa/bash_run_copy.sh

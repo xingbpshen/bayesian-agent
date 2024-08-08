@@ -1,0 +1,55 @@
+[
+  {
+    "image_id": 95707,
+    "question_id": "QXpLwCmcjZXSBHQULTdAXu",
+    "question": "What is typically on top of a cake?",
+    "choices": [
+      "chocolate",
+      "icing",
+      "candles",
+      "sprinkles"
+    ],
+    "correct_choice_idx": 1,
+    "rationales": [
+      "Frosting is a typical topping on a cake.",
+      "The largest cake present here is covered in a lime green icing.",
+      "Cakes usually have a creamy glaze made of sugar to add flavor and keep them together."
+    ],
+    "caption": "A piece of cake that is sitting on foil."
+  },
+  {
+    "image_id": 127092,
+    "question_id": "iGmzkJ63JuV4MwnQo2B6Jb",
+    "question": "What must be activated so the parked cars stay in place?",
+    "choices": [
+      "headlights",
+      "sunroof",
+      "radio",
+      "emergency brake"
+    ],
+    "correct_choice_idx": 3,
+    "rationales": [
+      "Cars are parked on a hill on a street.",
+      "The area is hilly. activating the headlights, radio, or sunroof would not help a car stay in place.",
+      "The emergency brakes must be activated so that the cars could stay in place on the slope."
+    ],
+    "caption": "A row of buildings and a city street on a hill that is pretty steep."},
+  {
+    "image_id": 530836,
+    "question_id": "PmWMsFgyX6apXWit2Z87aj",
+    "question": "Where would you most likely find this advertisement?",
+    "choices": [
+      "book",
+      "newspaper",
+      "library",
+      "magazine"
+    ],
+    "correct_choice_idx": 3,
+    "rationales": [
+      "The folded, glossiness of the image implies that this is a picture of a magazine. magazines tend to be folded and glossy.",
+      "The advertisement is for century food kitchens. an ad like this would not be found in a book, newspaper, or library.",
+      "The ad is from a magazine."
+    ],
+    "caption": "There are appliances and cookware in a kitchen."
+  }
+]
