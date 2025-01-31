@@ -11,8 +11,8 @@ from scipy.stats import pearsonr, spearmanr
 import numpy as np
 import math
 
-gpt_config = json.load(open("../run_toydata_aokvqa/gpt_config.json", "r"))
-openai.api_key = gpt_config["api_key"]
+# gpt_config = json.load(open("../run_toydata_aokvqa/gpt_config.json", "r"))
+# openai.api_key = gpt_config["api_key"]
 
 
 def load_data(file_path):
