@@ -8,7 +8,11 @@ import openai
 from sklearn.metrics import roc_auc_score, precision_recall_curve, auc
 import re
 from scipy.stats import pearsonr, spearmanr
+import numpy as np
 import math
+
+gpt_config = json.load(open("../run_toydata_aokvqa/gpt_config.json", "r"))
+openai.api_key = gpt_config["api_key"]
 
 
 def load_data(file_path):
@@ -104,6 +108,44 @@ def calculate_ece(data, model, num_bins=10, uniform_bins=False):
     ece /= total_count
 
     return ece, bin_values
+
+
+def calculate_ece_2(confidences, pred_labels, true_labels, n_bins=10):
+    # Example usage
+    # confidences = np.random.rand(100)
+    # pred_labels = np.random.randint(0, 2, 100)
+    # true_labels = np.random.randint(0, 2, 100)
+
+    confidences = np.array(confidences)
+    pred_labels = np.array(pred_labels)
+    true_labels = np.array(true_labels)
+
+    # Initialize bins
+    bin_boundaries = np.linspace(0, 1, n_bins + 1)
+    bin_lowers = bin_boundaries[:-1]
+    bin_uppers = bin_boundaries[1:]
+
+    ece = 0.0
+
+    for bin_lower, bin_upper in zip(bin_lowers, bin_uppers):
+        # Select samples that fall into this bin
+        in_bin = (confidences > bin_lower) & (confidences <= bin_upper)
+        prop_in_bin = np.mean(in_bin)  # Proportion of samples in this bin
+
+        accuracy_in_bin = 0
+        avg_confidence_in_bin = 0
+        if prop_in_bin > 0:
+            accuracy_in_bin = np.mean(pred_labels[in_bin] == true_labels[in_bin])
+            avg_confidence_in_bin = np.mean(confidences[in_bin])
+            ece += prop_in_bin * np.abs(avg_confidence_in_bin - accuracy_in_bin)
+
+        # Print the average confidence and accuracy in this bin
+        print(f"Bin {bin_lower:.2f}-{bin_upper:.2f}: ")
+        print(f"\tAverage Confidence: {avg_confidence_in_bin:.4f}")
+        print(f"\tAverage Accuracy: {accuracy_in_bin:.4f}")
+        print(f"\tTotal in Bin: {np.sum(in_bin)}\n")
+
+    return ece
 
 
 def calculate_correlation(data, model):
@@ -242,6 +284,9 @@ def calculate_auroc_pr(data, model):
     # Extract true labels and predicted probabilities from the predictions
     true_labels = [pred['correct'] for pred in predictions]
     pred_probs = [pred['probability'] for pred in predictions]
+    # Calculate accuracy, sum all correct predictions and divide by the total number of predictions
+    accuracy = sum(true_labels) / len(true_labels)
+    print(f"Accuracy: {accuracy}")
     # Calculate AUROC
     auroc = roc_auc_score(true_labels, pred_probs)
     # Calculate AUPRC for Positive class (PR-P)
@@ -281,10 +326,22 @@ if __name__ == '__main__':
     parser.add_argument('--model', type=str, required=True, choices=['io', 'cot', 'chameleon', 'bcot-ticoh-s', 'chameleon-hybrid', "bcot-ticoh-l"])
     parser.add_argument('--file_path', type=str, required=True)
     parser.add_argument('--num_bins', type=int, default=10)
-    parser.add_argument('--uniform_bins', action='store_true')
+    parser.add_argument('--uniform_bins', type=bool, default=True, required=False)
     args = parser.parse_args()
     # Load data
-    data = load_data(args.file_path)
+    __data = load_data(args.file_path)
+
+
+
+    # load json file '../results/scienceqa_3568/vpgm_dirich_test_2563.json'
+    _data = json.load(open('../results/scienceqa_3568/vpgm_test_2563.json', "r"))
+    # Extract the set of pids from B
+    b_pids = {item["pid"] for item in _data}
+    # Filter A to include only items whose pid is in B's pids
+    data = [item for item in __data if item["pid"] in b_pids]
+
+
+
     # Calculate ECE and bin values
     ece, bin_values = calculate_ece(data, args.model, args.num_bins, args.uniform_bins)
     print(f"The ECE of {args.model} is: {ece}")

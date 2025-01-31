@@ -4,9 +4,9 @@
 test_trial=scienceqa-3568
 sg_temperature=0.2  # set 0.2 for chameleon-hybrid, bcot-ticoh-s, bcot-ticoh-l, set 0 otherwise
 sg_num_samplings=3  # for chameleon-hybrid, bcot-ticoh-s, bcot-ticoh-l
-model=bcot-ticoh-l  # choose from cot, chameleon, chameleon-hybrid, bcot-ticoh-s, bcot-ticoh-l
-label=notuse
-llm_version=gpt-3.5-turbo-0613  # previously used version gpt-3.5-turbo-0613 but it is deprecated when you see this message
+model=bcot-ticoh-s  # choose from cot, chameleon, chameleon-hybrid, bcot-ticoh-s, bcot-ticoh-l
+label=exp1
+llm_version=gpt-3.5-turbo-1106  # previously used version gpt-3.5-turbo-0613 but it is deprecated when you see this message
 
 # Command to execute
 CMD="python run.py

@@ -2,9 +2,13 @@ env/
 results/
 # data/scienceqa/images/
 data/aokvqa/
+data/my_aokvqa/
+data/toydata_aokvqa/
 run_scienceqa/posthoc_analysis.py
 run_scienceqa/plot.ipynb
 run_scienceqa/bash_run_copy.sh
+run_toydata_aokvqa/
+run_my_aokvqa/
 
 checkpoints/*.pt
 
@@ -14,4 +18,5 @@ checkpoints/*.pt
 *.DS_Store
 *.ipynb_checkpoints
 *.pyc
+*.pdf
 *__pycache__

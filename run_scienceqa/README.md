@@ -1,0 +1,3 @@
+The ece.py can directly calculate the SCIQA2563, because it only extract the questions indexes in the input cache that appeared in the "results/scienceqa_3568/vpgm_test_2563.json".
+
+The dirichlet_hyperparam_test.py can compute the ece bins before/after applying Dirichlet prior. But the AOKVQA's logic cannot (it instead create a new cache file with updated acc and conf, this new file can be passed to ece function to compute the ece after applying Dirichlet prior).

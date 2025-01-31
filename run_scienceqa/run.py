@@ -53,7 +53,7 @@ def parse_args():
     # solution_generator
     parser.add_argument('--sg_engine', type=str, default="gpt-3.5-turbo", help='engine for solution generator')
     parser.add_argument('--sg_temperature', type=float, default=0.2, help='temperature for solution generator')
-    parser.add_argument('--sg_max_tokens', type=int, default=1024, help='max tokens for solution generator')
+    parser.add_argument('--sg_max_tokens', type=int, default=2048, help='max tokens for solution generator')
     parser.add_argument('--sg_patience', type=int, default=10, help='patience for solution generator')
     parser.add_argument('--sg_num_samplings', type=int, default=3, help='number of samplings for solution generator')
     # debug
@@ -97,8 +97,8 @@ if __name__ == "__main__":
     for pid in tqdm(pids):
         solver.cache = {"pid": pid} # clear the cache
 
-        if pid not in ["16788", "16797"]:
-            continue
+        # if pid not in ["16788", "16797"]:
+        #     continue
 
         if args.debug or count < 10:
             print("\n\n===================================\n")

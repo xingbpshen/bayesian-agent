@@ -551,7 +551,7 @@ Conclusion:
 The answer is A with a numerical probability of 0.950.
 
 
-IMPORTANT: If there are more than one option with the same highest probability, you must randomly select one with the highest probability and strictly follow the format of:
+IMPORTANT: Do not use markdown or bullet points. If there are more than one option with the same highest probability, you must randomly select one with the highest probability and strictly follow the format of:
 Conclusion:
 Due to the absence of any supporting evidence for any option, the answer is [option] with numerical probability of [option’s numerical probability with 3 decimal places] from random selection
 
