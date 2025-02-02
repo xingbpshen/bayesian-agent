@@ -86,7 +86,7 @@ selected_answers_np = np.array(selected_answers)
 class pi_k_model(nn.Module):
     def __init__(self):
         super(pi_k_model, self).__init__()
-        self.lamb = nn.Parameter(torch.ones(1) * 0.001)
+        self.lamb = nn.Parameter(torch.ones(1) * 0.001) # This is \tau in the paper
         self.nks = nks.clone().detach().requires_grad_(True)
 
     def forward(self, pis, tags):

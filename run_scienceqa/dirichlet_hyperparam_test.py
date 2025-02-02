@@ -52,7 +52,7 @@ print(f"ECE before dirichlet: {ece}\n")
 class pi_k_model(nn.Module):
     def __init__(self, init_lamb):
         super(pi_k_model, self).__init__()
-        self.lamb = nn.Parameter(torch.ones(1) * init_lamb)
+        self.lamb = nn.Parameter(torch.ones(1) * init_lamb) # This is \tau in the paper
         self.nks = nks.clone().detach().requires_grad_(True)
 
     def forward(self, pis):
